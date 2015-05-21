@@ -1,0 +1,85 @@
+.pac-icon { 
+    display: none; 
+}
+.loader { 
+    min-height: 80px;
+    background-image: url('/public/images/loader.gif');
+    background-position: center center;
+    background-repeat: no-repeat; 
+}
+#result_box { 
+    overflow: auto; 
+}
+.route {
+    min-height: 80px;            
+}
+.route h4 {
+    margin: 0;
+}
+div.route:hover {
+    background: #e0e0e0;
+    cursor: pointer;
+}
+.route-default {
+    background: #ecf0f1;
+}
+.route-hover {
+    background: #e0e0e0;
+}
+#map-loader {           
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;          
+    margin-left: -60px;
+    margin-top: -60px;
+    background-image: url('/public/images/loader.gif');
+    background-position: center center;
+    background-repeat: no-repeat; 
+    z-index: 9999;
+}
+.route h4 {
+    height: 24px;
+    line-height: 24px;
+    margin-bottom: 5px;
+}
+/*#search {
+    width: 100px;
+}*/
+.route {
+    font-size: 12px;
+}
+.wheelchair {
+    background: url('/public/images/wheelchair.png');
+    width: 24px;
+    height: 24px;
+}
+.social {
+    margin-top: 17px;
+}
+.caret {
+    margin-left: 70px;
+}
+.copy {
+    font-size: 13px;
+}
+@media (max-width: 768px) {
+    .caret {
+        margin-left: 0px;
+    }
+    .copy {
+        text-align: center;
+    }
+    #result_box {
+        display: none;
+        min-height: 400px;
+    }
+    #map {
+        margin-top: 20px;
+    }
+    #search {
+        width: 60px;
+    }
+}
