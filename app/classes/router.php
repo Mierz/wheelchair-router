@@ -19,7 +19,7 @@ Class Router {
         }
         $this->path = $path;
     }
-     
+
     private function getController(&$file, &$controller, &$action, &$args) {
         $route = (empty($_GET['route'])) ? '' : $_GET['route'];
         unset($_GET['route']);

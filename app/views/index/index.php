@@ -12,7 +12,7 @@
                 <input class='form-control input-sm' id='to' name="to" autocomplete="off" placeholder='<?=PLACEHOLDER?>' maxlength="80" type='text' />
             </p>
             <p>
-            <div>
+            <div style="min-height: 30px;">
                 <div class='pull-right'>
                     <button class='btn btn-success btn-sm' id='search'>
                         &nbsp;
@@ -30,10 +30,19 @@
                         </label>
                         <label class="btn btn-default btn-sm active">
                             <input type="checkbox" id="trol" autocomplete="off" checked> <?=TRANSPORT_TROL?>
-                        </label>               
+                        </label>
                     </div>
-                </div>                
-            </div>                
+                </div>
+            </div>
+            </p>
+            <p>
+            <div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" id="direct" checked /> <?=DIRECT?>
+                    </label>
+                </div>
+            </div>
             </p>
             <br />
             

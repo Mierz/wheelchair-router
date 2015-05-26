@@ -15,12 +15,26 @@ function search()
         }
     }
     
-    getLocationData(document.getElementById('from').value, function(locationData) {          
+    getLocationData(document.getElementById('from').value, function(locationData) {
+        if(Data['lang'] == 'uk')
+        {
+            var iconStart = '/public/images/start_point_pin_uk.png';
+        }
+        if(Data['lang'] == 'ru')
+        {
+            var iconStart = '/public/images/start_point_pin_ru.png';
+        }
+        if(Data['lang'] == 'en')
+        {
+            var iconStart = '/public/images/start_point_pin_en.png';
+        }
+
+
         var marker = new google.maps.Marker({
             position: locationData.geometry.location,
             map: map,
             animation: google.maps.Animation.DROP,
-            icon: '/public/images/start_point_pin.png',
+            icon: iconStart,
             title: 'Початок маршруту'
         });
 
@@ -28,12 +42,25 @@ function search()
         points.push(locationData.geometry.location);        
     });
     
-    getLocationData(document.getElementById('to').value, function(locationData) {    
+    getLocationData(document.getElementById('to').value, function(locationData) {
+        if(Data['lang'] == 'uk')
+        {
+            var iconStop = '/public/images/stop_point_pin_uk.png';
+        }
+        if(Data['lang'] == 'ru')
+        {
+            var iconStop = '/public/images/stop_point_pin_ru.png';
+        }
+        if(Data['lang'] == 'en')
+        {
+            var iconStop = '/public/images/stop_point_pin_en.png';
+        }
+
         var marker = new google.maps.Marker({
             position: locationData.geometry.location,
             map: map,
             animation: google.maps.Animation.DROP,
-            icon: '/public/images/stop_point_pin.png',
+            icon: iconStop,
             title: 'Кінець маршруту'
         });
 
@@ -53,6 +80,8 @@ function search()
         getRoutes('/rest/getRoutes', function(response) {                           
             if(response.status === 'OK') {
                 $('#result_box').show();
+
+                console.log(response);
                 var count = response.response.length;                
                 if(count === 0)
                 {
@@ -60,6 +89,7 @@ function search()
                 }   
                 
                 $.each(response.response, function(i, item) {
+
                     $('#result_box').append('<div class="well route" onclick="drawRoute('+ item.id +','+ item.start_position +','+ item.stop_position + ','+ item.name + ')"><div class="pull-right wheelchair"></div> <h4>' + item.subtype +' ' + item.title + '</h4>' + Data['price'] + ': ' + item.price + ' UAH.<br/>' + Data['distance'] + ': ' + item.distance + ' м.<br/><div class="route-detail" style="display: none; margin-top: 5px;"><p style="border-bottom: 2px dashed #798d8f;">' + Data['walk_to'] + ' <b>' + response.stops[0][item.start_num]['@value'] + '</b> ' + item.foots[0].distance + ' м. (' + item.foots[0].time + ' ' + Data['min'] + ')</p><p>' + Data['stop_start'] + ': <b>' + response.stops[0][item.start_num]['@value']  + '</b><br/>' + Data['on_the_road'] + ': ' + item.time + ' ' + Data['min'] + '<br/>' + Data['stop_end'] + ': <b>' + response.stops[0][item.stop_num]['@value']  + '</b></p><p style="border-top: 2px dashed #798d8f;">' + Data['walk_from'] + ' <b>' + response.stops[0][item.stop_num]['@value'] + '</b> ' + item.foots[1].distance + ' м. (' + item.foots[1].time + ' хв. </p></div></div>');
                 });
             } else {
@@ -239,13 +269,14 @@ function drawRoute(id, start, stop)
 function getRoutes(url, callback)
 {   
     var bus = $( '#bus' ).prop("checked");
-    var trol = $( '#trol' ).prop("checked");            
-    //$( '#ok' ).text('start=' + points[0] + '&end=' + points[1] + '&bus=' + bus + '&trol=' + trol);
-    $.ajax({        
+    var trol = $( '#trol' ).prop("checked");
+    var direct = $( '#direct' ).prop("checked");
+    $( '#ok' ).text('start=' + points[0] + '&end=' + points[1] + '&bus=' + bus + '&trol=' + trol);
+    $.ajax({
         dataType: 'json',                
         type: 'GET',
         url: url,       
-        data: 'start=' + points[0] + '&end=' + points[1] + '&bus=' + bus + '&trol=' + trol,
+        data: 'start=' + points[0] + '&end=' + points[1] + '&bus=' + bus + '&trol=' + trol + '&direct=' + direct,
         beforeSend: function()
         {
             $( '#result_box' ).html('');
@@ -263,5 +294,5 @@ function getRoutes(url, callback)
         {            
             callback(response);            
         }
-    }); 
+    });
 }

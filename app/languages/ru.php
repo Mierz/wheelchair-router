@@ -11,3 +11,6 @@ define('TRANSPORT_BUS', 'Автобус');
 define('TRANSPORT_TROL', 'Троллейбус');
 define('PLACEHOLDER', 'Введите полнный адрес...');
 define('LANGUAGE', 'Язык сайта');
+define('KYIV', 'Киев');
+define('ODESA', 'Одесса');
+define('DIRECT', 'без пересадок');

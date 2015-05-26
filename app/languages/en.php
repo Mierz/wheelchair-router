@@ -11,3 +11,6 @@ define('TRANSPORT_BUS', 'Bus');
 define('TRANSPORT_TROL', 'Trolleybus');
 define('PLACEHOLDER', 'Enter full adress...');
 define('LANGUAGE', 'Language');
+define('KYIV', 'Кyiv');
+define('ODESA', 'Odessa');
+define('DIRECT', 'direct route');

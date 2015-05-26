@@ -7,10 +7,10 @@ Class Controller_Rest extends Controller_Base {
     
     function __construct() 
     {
-        if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && empty($_SERVER['HTTP_X_REQUESTED_WITH'])) {            
+        /*if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && empty($_SERVER['HTTP_X_REQUESTED_WITH'])) {
             echo 'Access denied';
             exit;
-        }         
+        } */
         
         $this->lang = $this->getLangTitle();
         if($this->lang == 'uk') 
@@ -31,7 +31,8 @@ Class Controller_Rest extends Controller_Base {
         $endPoint = $this->explodeString(filter_input(INPUT_GET, 'end', FILTER_SANITIZE_STRING));                   
         
         $bus = filter_input(INPUT_GET, 'bus', FILTER_VALIDATE_BOOLEAN);
-        $trol = filter_input(INPUT_GET, 'trol', FILTER_VALIDATE_BOOLEAN);       
+        $trol = filter_input(INPUT_GET, 'trol', FILTER_VALIDATE_BOOLEAN);
+        $direct = filter_input(INPUT_GET, 'direct', FILTER_VALIDATE_BOOLEAN);
         
         $transport = [];
                 
@@ -65,23 +66,19 @@ Class Controller_Rest extends Controller_Base {
             'login'         => $this->login,
             'password'      => $this->password,
             'function'      => 'routes.Search',         
-            'city'          => 'kyiv',
+            'city'          => $_SESSION['city'],
             'start_lat'     => $startPoint['latitude'],
             'start_lng'     => $startPoint['longitude'],
             'stop_lat'      => $endPoint['latitude'],
             'stop_lng'      => $endPoint['longitude'],
             'transports'    => $types,
-            'direct'        => 'true',
+            'direct'        => $this->formatDirect($direct),
             'format'        => 'json',
             'lang'          => $this->lang
         );
         
-        $response = json_decode(file_get_contents('https://api.eway.in.ua/' . '?' . urldecode(http_build_query($params))), true);      
-        //$response = 'https://api.eway.in.ua/' . '?' . urldecode(http_build_query($params));    
-        //print_r($response);
-        
-        /*echo "<pre>";
-        print_r($response);*/
+        $response = json_decode(file_get_contents('https://api.eway.in.ua/' . '?' . urldecode(http_build_query($params))), true);
+        //$response = 'https://api.eway.in.ua/' . '?' . urldecode(http_build_query($params));
         
         if(!isset($response['ways']))
         {
@@ -91,15 +88,17 @@ Class Controller_Rest extends Controller_Base {
         
         $model = new Model_Transport();               
         
-        $correctBus = $model->getTransport('bus');
-        $correctTrolleybus = $model->getTransport('trol');
-        
+        $correctBus = $model->getTransport('bus', $_SESSION['city']);
+        $correctTrolleybus = $model->getTransport('trol', $_SESSION['city']);
+
         $result = [];
         $foots = [];
+
         foreach($response['ways']['way'] as $key => $value)
         {            
             foreach($value['routes']['route'] as $item)
-            {                
+            {
+
                 if($item['subtype'] == 'Автобус' || $item['subtype'] == 'Bus')
                 {
                     if(in_array($item['title'], $correctBus, true))
@@ -107,22 +106,24 @@ Class Controller_Rest extends Controller_Base {
                         foreach($value['stop'] as $stops)
                         {
                             $foots[] = [
-                                'distance' => $stops['distance'],
-                                'time' => $stops['time'],
+                                'distance'  => $stops['distance'],
+                                'time'      => $stops['time'],
                             ];
                         }
-                        
+
                         $result[] = [
-                            'id' => $item['id'],
-                            'start_position' => $item['start_position'],
-                            'stop_position' => $item['stop_position'],
-                            'title' => $item['title'],
-                            'type' => $item['type'],
-                            'subtype' => $item['subtype'],
-                            'time' => $item['time'],
-                            'distance' => $item['distance'],
-                            'price' => $item['price'],
-                            'foots' => $foots,
+                            'id'                => $item['id'],
+                            'start_position'    => $item['start_position'],
+                            'stop_position'     => $item['stop_position'],
+                            'title'             => $item['title'],
+                            'type'              => $item['type'],
+                            'subtype'           => $item['subtype'],
+                            'time'              => $item['time'],
+                            'distance'          => $item['distance'],
+                            'price'             => $item['price'],
+                            'start_num'         => $item['stop'][0]['id'],
+                            'stop_num'          => $item['stop'][1]['id'],
+                            'foots'             => $foots,
                         ];
                     }
                 }
@@ -134,24 +135,24 @@ Class Controller_Rest extends Controller_Base {
                         foreach($value['stop'] as $stops)
                         {
                             $foots[] = [
-                                'distance' => $stops['distance'],
-                                'time' => $stops['time'],
+                                'distance'  => $stops['distance'],
+                                'time'      => $stops['time'],
                             ];
                         }
                         
                         $result[] = [
-                            'id' => $item['id'],
-                            'start_position' => $item['start_position'],
-                            'stop_position' => $item['stop_position'],
-                            'title' => $item['title'],
-                            'type' => $item['type'],
-                            'subtype' => $item['subtype'],
-                            'time' => $item['time'],
-                            'distance' => $item['distance'],
-                            'price' => $item['price'],
-                            'start_num' => $item['stop'][0]['id'],
-                            'stop_num' => $item['stop'][1]['id'],
-                            'foots' => $foots,
+                            'id'                => $item['id'],
+                            'start_position'    => $item['start_position'],
+                            'stop_position'     => $item['stop_position'],
+                            'title'             => $item['title'],
+                            'type'              => $item['type'],
+                            'subtype'           => $item['subtype'],
+                            'time'              => $item['time'],
+                            'distance'          => $item['distance'],
+                            'price'             => $item['price'],
+                            'start_num'         => $item['stop'][0]['id'],
+                            'stop_num'          => $item['stop'][1]['id'],
+                            'foots'             => $foots,
                         ];
                     }
                 }
@@ -165,12 +166,40 @@ Class Controller_Rest extends Controller_Base {
         {
             array_push($stops, $value);
         }
-        
-        //array_push($results, $foots);
          
         header('Content-Type: application/json');
         echo json_encode(['status' => 'OK', 'response' => $result, 'stops' => $stops]);
-    }    
+    }
+
+    private function formatResponse($item, $foots, $direct)
+    {
+        return [
+            'id'                => $item['id'],
+            'start_position'    => $item['start_position'],
+            'stop_position'     => $item['stop_position'],
+            'title'             => $item['title'],
+            'type'              => $item['type'],
+            'subtype'           => $item['subtype'],
+            'time'              => $item['time'],
+            'distance'          => $item['distance'],
+            'price'             => $item['price'],
+            'start_num'         => $item['stop'][0]['id'],
+            'stop_num'          => $item['stop'][1]['id'],
+            'foots'             => $foots,
+        ];
+    }
+
+    private function formatDirect($direct)
+    {
+        if($direct == 'true')
+        {
+            return 'true';
+        }
+        else
+        {
+            return 'false';
+        }
+    }
     
     public function getPoints()
     {
@@ -178,14 +207,14 @@ Class Controller_Rest extends Controller_Base {
             'login'             => $this->login,
             'password'          => $this->password,
             'function'          => 'routes.GetRouteToDisplay',         
-            'city'              => 'kyiv',
+            'city'              => $_SESSION['city'],
             'id'                => filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT),
             'start_position'    => filter_input(INPUT_GET, 'start', FILTER_SANITIZE_NUMBER_INT),
             'stop_position'     => filter_input(INPUT_GET, 'stop', FILTER_SANITIZE_NUMBER_INT),   
             'lang'              => $this->lang                
         );
 
-        $response = json_decode(file_get_contents('https://api.eway.in.ua/' . '?' . urldecode(http_build_query($params))), true);  
+        $response = json_decode(file_get_contents('https://api.eway.in.ua/' . '?' . urldecode(http_build_query($params))), true);
         //$response = 'https://api.eway.in.ua/' . '?' . urldecode(http_build_query($params));
         
         header('Content-Type: application/json');            
@@ -197,7 +226,7 @@ Class Controller_Rest extends Controller_Base {
         $coords = explode(", ", $string);
         
         return [
-            'latitude' => trim($coords[0], '('),
+            'latitude'  => trim($coords[0], '('),
             'longitude' => trim($coords[1], ')')
             ];                
     }    

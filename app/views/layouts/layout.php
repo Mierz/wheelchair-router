@@ -23,7 +23,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class='navbar-brand' href='/'><?=TITLE?></a>
+                    <a class='navbar-brand' href='/?city=<?=$city?>'><?=TITLE?></a>
                    
                 </div>
             <div class="navbar-collapse collapse">
@@ -32,6 +32,14 @@
                         <div class="yashare-auto-init" data-yashareL10n="ru" data-yashareQuickServices="vkontakte,facebook,twitter" data-yashareTheme="counter"></div>
                     </li>
                     <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-map-marker"></span>
+                        <?php if ($city == 'kyiv') { echo KYIV; }?>
+                        <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="?city=kyiv"><?=KYIV?></a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown language">
                         <?php
                             if($lang == 'uk') {
                                 echo '<a href="#" class="dropdown-toggle hidden-xs" data-toggle="dropdown" role="button" aria-expanded="false" style="background: url(/public/images/ukraine.png);background-repeat: no-repeat;background-position: center center;"><span class="caret"></span></a>';
@@ -52,19 +60,19 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-left">
-                    <!--<div id="ok"></div>
-                    <button onclick="drawRoute(356, 502, 651)">draw</button>-->
-                    <li><a href="/"><?=NAV_MAIN?></a></li>
+                    <!--<button onclick="drawRoute(356, 502, 651)">draw</button>-->
+                    <li><a href="/?city=<?=$city?>"><?=NAV_MAIN?></a></li>
                     <li><a href="/index/about"><?=NAV_ABOUT?></a></li>
                 </ul>                       
             </div><!--/.nav-collapse -->
         </div>
     </div>
-    <div class='container-fluid'>        
+    <div class='container-fluid'>
+        <div id="ok"></div>
         <?php include ($contentPage); ?>      
         <div class='row'>
             <div class='col-md-12 text-right copy'>
-            <small>&copy; 2015 <a href='/' title='Wheelchair Route'>Wheelchair Route</a>. <?=COPY?> <a href='http://www.eway.in.ua' title='EasyWay' target="_blank">EasyWay</a></small>
+            <small>&copy; 2015 <a href='/?city=<?=$city?>' title='Wheelchair Route'>Wheelchair Route</a>. <?=COPY?> <a href='http://www.eway.in.ua' title='EasyWay' target="_blank">EasyWay</a></small>
             </div>
         </div>
     </div>
@@ -73,7 +81,7 @@
     <script type="text/javascript" src="/public/js/geocoder.js"></script>
     <script type="text/javascript" src="/public/js/jquery.toastmessage.js"></script>
     <script type="text/javascript" src="/public/js/lang.js"></script>
-    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places&language=<?=$lang;?>"></script>    
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?key=AIzaSyA7fWDOX_qHumelQOEeOZNHBqgAl8YAMYA&sensor=false&libraries=places&language=<?=$lang;?>"></script>
     <script type="text/javascript" src="//yandex.st/share/share.js" charset="utf-8"></script>
     <script type='text/javascript'>        
       //<![CDATA[
@@ -92,6 +100,8 @@
 
         var autoOptions = {
             language: '<?=$lang;?>',
+            types: ['geocode'],
+            componentRestricts: {country: "uk"}
         }
         
         new google.maps.places.Autocomplete(document.getElementById('from'), autoOptions);
@@ -104,7 +114,12 @@
             geocoder = new google.maps.Geocoder();
             var mapOptions = {
                 zoom: 13,
-                center: new google.maps.LatLng(50.4501, 30.5234),		                        
+                <?php if ($city == 'kyiv'): ?>
+                center: new google.maps.LatLng(50.4501, 30.5234),
+                <?php endif ?>
+                <?php if ($city == 'odesa'): ?>
+                center: new google.maps.LatLng(46.482526, 30.7233095),
+                <?php endif ?>
                 disableDefaultUI: true,
                 mapTypeControlOptions: {
                     mapTypeIds: [google.maps.MapTypeId.ROADMAP, style]

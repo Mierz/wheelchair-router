@@ -58,8 +58,9 @@ div.route:hover {
 }
 .social {
     margin-top: 17px;
+    margin-right: 20px;
 }
-.caret {
+.language .caret {
     margin-left: 70px;
 }
 .copy {

@@ -17,4 +17,6 @@ Abstract Class Controller_Base extends Languages {
     }
 
     abstract function index();
+
+
 }
