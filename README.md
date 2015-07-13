@@ -4,4 +4,4 @@
 -------------
 ![Alt text](http://5.firepic.org/5/images/2015-07/13/t1iu58tr52a3.png "Схема БД")
 
-Демо: http://631169.stasyk.web.hosting-test.net/?city=kyiv
+Демо: http://631169.stasyk.web.hosting-test.net/
